@@ -1,0 +1,34 @@
+# Maven
+target/
+*.jar
+*.war
+*.zip
+.m2/
+
+# Frontend
+node_modules/
+dist/
+*.log
+.DS_Store
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.iml
+
+# Podman/Docker
+.podman/
+.docker/
+
+# Database
+*.sql
+*.db
+
+# Misc
+.copilot/
+*.tmp
+*.bak
