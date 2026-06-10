@@ -32,12 +32,13 @@ podman run -d --name ruoyi-redis \
 
 ```bash
 # 1. 编译打包（使用 podman + Maven 容器，首次需下载依赖，约 3-5 分钟）
+#    注意：不用 clean，避免 podman FUSE overlay 残留文件导致删除失败
 podman run --rm \
   -v /mnt/data_d/Projects/ruoyi/backend/ruoyi-vue-pro:/workspace \
   -v ruoyi-m2:/root/.m2 \
   -w /workspace \
   maven:3.9-eclipse-temurin-17 \
-  mvn clean install -DskipTests -q
+  mvn install -DskipTests -q
 
 # 2. 启动后端
 java -jar /mnt/data_d/Projects/ruoyi/backend/ruoyi-vue-pro/yudao-server/target/yudao-server.jar \
@@ -148,12 +149,13 @@ podman stop ruoyi-user-frontend
 ## 后端修改后重新编译
 
 ```bash
+# 不使用 clean，避免 podman FUSE 残留文件删除失败
 podman run --rm \
   -v /mnt/data_d/Projects/ruoyi/backend/ruoyi-vue-pro:/workspace \
   -v ruoyi-m2:/root/.m2 \
   -w /workspace \
   maven:3.9-eclipse-temurin-17 \
-  mvn clean install -DskipTests -q
+  mvn install -DskipTests -q
 ```
 
 ---
