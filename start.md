@@ -58,7 +58,6 @@ podman run --rm -d \
   -v ruoyi-pnpm-store:/root/.local/share/pnpm/store \
   -w /workspace \
   -p 5174:5173 \
-  -e VITE_BASE_URL=http://host.containers.internal:48080 \
   docker.io/library/node:20-alpine \
   sh -c "npm install -g pnpm && CI=true pnpm install && pnpm dev --host 0.0.0.0 --port 5173"
 ```
@@ -74,7 +73,6 @@ podman run --rm -d \
   -v ruoyi-pnpm-store:/root/.local/share/pnpm/store \
   -w /workspace \
   -p 5175:5173 \
-  -e VITE_BASE_URL=http://host.containers.internal:48080 \
   docker.io/library/node:20-alpine \
   sh -c "npm install -g pnpm && CI=true pnpm install && pnpm dev --host 0.0.0.0 --port 5173"
 ```
