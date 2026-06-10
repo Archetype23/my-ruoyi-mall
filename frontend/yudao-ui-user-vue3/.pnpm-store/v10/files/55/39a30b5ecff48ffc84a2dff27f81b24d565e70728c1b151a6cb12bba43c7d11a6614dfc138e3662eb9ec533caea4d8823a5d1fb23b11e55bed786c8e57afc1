@@ -1,0 +1,10 @@
+/**
+ * A viewer with mouse and keyboard navigation features.
+ *
+ *
+ *
+ */
+export default class NavigatedViewer<ServiceMap = null> extends Viewer<ServiceMap> {}
+
+type BaseViewerOptions = import("./BaseViewer").BaseViewerOptions;
+import Viewer from './Viewer';

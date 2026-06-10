@@ -1,0 +1,7 @@
+export default class TextAnnotationBehavior extends CommandInterceptor {
+    constructor(eventBus: any, textRenderer: any);
+}
+
+type EventBus = import("diagram-js/lib/core/EventBus").default;
+type TextRenderer = import("../../../draw/TextRenderer").default;
+import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';

@@ -1,0 +1,5 @@
+import plugin from "@unocss/eslint-plugin";
+//#region src/flat.ts
+var flat_default = plugin.configs.flat;
+//#endregion
+export { flat_default as default };

@@ -1,0 +1,9 @@
+{
+  "name": "vue-types-shim",
+  "main": "../dist/shim.cjs",
+  "unpkg": "../dist/shim.umd.js",
+  "umd:main": "../dist/shim.umd.js",
+  "module": "../dist/shim.mjs",
+  "esmodule": "../dist/shim.mjs",
+  "types": "../dist/shim.d.ts"
+}

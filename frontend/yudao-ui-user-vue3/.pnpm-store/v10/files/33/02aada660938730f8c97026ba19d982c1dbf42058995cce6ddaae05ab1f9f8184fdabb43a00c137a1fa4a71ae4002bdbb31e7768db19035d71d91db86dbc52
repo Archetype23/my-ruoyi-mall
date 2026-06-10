@@ -1,0 +1,8 @@
+/**
+ * @description class/inline style mode helpers
+ */
+import { IDomEditor } from '../editor/interface';
+import { ClassStylePolicy, IClassStyleUnsupportedPayload, TextStyleMode } from './interface';
+export declare function getTextStyleMode(editor?: IDomEditor): TextStyleMode;
+export declare function getClassStylePolicy(editor?: IDomEditor): ClassStylePolicy;
+export declare function reportUnsupportedClassStyle(editor: IDomEditor | undefined, payload: IClassStyleUnsupportedPayload): void;

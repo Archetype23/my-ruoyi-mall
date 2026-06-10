@@ -1,0 +1,6 @@
+[submodule "backend/ruoyi-vue-pro"]
+	path = backend/ruoyi-vue-pro
+	url = https://github.com/YunaiV/ruoyi-vue-pro.git
+[submodule "frontend/yudao-ui-admin-vue3"]
+	path = frontend/yudao-ui-admin-vue3
+	url = https://github.com/yudaocode/yudao-ui-admin-vue3.git

@@ -1,0 +1,7 @@
+/**
+ * @description create default uppy uploader
+ * @author wangfupeng
+ */
+import type { IUploadConfig, IUploader } from './interface';
+declare function createUppyUploader(config: IUploadConfig): IUploader;
+export default createUppyUploader;

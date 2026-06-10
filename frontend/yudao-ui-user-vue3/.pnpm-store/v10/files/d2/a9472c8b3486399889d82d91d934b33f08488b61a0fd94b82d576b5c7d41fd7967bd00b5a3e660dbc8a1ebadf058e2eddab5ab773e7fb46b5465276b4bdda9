@@ -1,0 +1,5 @@
+/**
+ * @description register builtin modules
+ * @author wangfupeng
+ */
+export {};

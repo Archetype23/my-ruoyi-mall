@@ -1,0 +1,14 @@
+/**
+ * @description text style class utils
+ */
+import { IDomEditor, StyleClassTokenType } from '@wangeditor-next/core';
+import { VNode, VNodeStyle } from 'snabbdom';
+import { Dom7Array } from './dom';
+export type TextStyleType = StyleClassTokenType;
+export type ClassStyleScene = 'render' | 'toHtml';
+export declare function genStyleClassName(type: TextStyleType, value: string): string;
+export declare function getRegisteredStyleTokenValues(editor: IDomEditor | undefined, type: TextStyleType): string[];
+export declare function getTextStyleMode(editor?: IDomEditor): import("@wangeditor-next/core").TextStyleMode;
+export declare function appendStyleClassAndData($text: Dom7Array, type: TextStyleType, value: string, editor?: IDomEditor, scene?: ClassStyleScene, inlineFallback?: () => void): void;
+export declare function appendVnodeStyleClassAndData(vnode: VNode, type: TextStyleType, value: string, editor?: IDomEditor, scene?: ClassStyleScene, inlineFallback?: VNodeStyle): void;
+export declare function getStyleValueFromDataOrClass($text: Dom7Array, type: TextStyleType, editor?: IDomEditor): string;

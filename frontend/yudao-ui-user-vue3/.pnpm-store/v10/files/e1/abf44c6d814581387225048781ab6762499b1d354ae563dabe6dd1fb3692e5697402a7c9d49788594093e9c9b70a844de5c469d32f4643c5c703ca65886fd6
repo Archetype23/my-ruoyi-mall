@@ -1,0 +1,86 @@
+import {getInjectArg, localeProps} from '../../utils';
+import uniqueId from '@form-create/utils/lib/unique';
+
+const label = '子表单';
+const name = 'group';
+
+export default {
+    menu: 'subform',
+    icon: 'icon-subform',
+    label,
+    name,
+    input: true,
+    inside: false,
+    drag: true,
+    dragBtn: true,
+    mask: false,
+    event: ['change'],
+    subForm: 'array',
+    loadRule(rule) {
+        rule.children = rule.props.rule || [];
+        rule.type = 'FcRow';
+        delete rule.props.rule;
+    },
+    parseRule(rule) {
+        rule.props.rule = rule.children;
+        rule.type = 'group';
+        delete rule.children;
+        delete rule.props.mode;
+    },
+    rule({t}) {
+        return {
+            type: 'fcRow',
+            field: uniqueId(),
+            title: t('com.group.name'),
+            info: '',
+            $required: false,
+            props: {
+                title: '第{index}页',
+            },
+            children: [],
+        };
+    },
+    props(_, {t}) {
+        return localeProps(t, name + '.props', [
+            {
+                type: 'select',
+                field: 'type',
+                options: [
+                    {label: t('props.default'), value: 'default'},
+                    {label: t('props.card'), value: 'card'},
+                ],
+                control: [
+                    {
+                        value: 'card',
+                        rule: ['title'],
+                    },
+                ],
+            },
+            {
+                type: 'input',
+                field: 'title',
+            },
+            {
+                type: 'switch',
+                field: 'disabled',
+            },
+            {type: 'switch', field: 'button', value: true},
+            {type: 'switch', field: 'sortBtn', value: true},
+            {type: 'inputNumber', field: 'expand'},
+            {type: 'inputNumber', field: 'min'},
+            {type: 'inputNumber', field: 'max'},
+            {
+                type: 'FnInput',
+                field: 'onBeforeRemove',
+                warning: t('com.group.info'),
+                props: {
+                    body: true,
+                    button: true,
+                    fnx: true,
+                    args: [getInjectArg(t)],
+                    name: 'onBeforeRemove',
+                },
+            },
+        ]);
+    },
+};

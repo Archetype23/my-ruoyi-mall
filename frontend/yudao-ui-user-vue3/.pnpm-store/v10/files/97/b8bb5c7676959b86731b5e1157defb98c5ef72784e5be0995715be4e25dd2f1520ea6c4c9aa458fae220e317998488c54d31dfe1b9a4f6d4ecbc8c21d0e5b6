@@ -1,0 +1,107 @@
+import SignaturePad, { type FromDataOptions, type FromDataUrlOptions, type Options as SigOptions, type PointGroup, type SignatureEvent, type ToSVGOptions } from "signature_pad";
+import type { PropType } from "vue";
+import type { Watermark } from "./utils";
+import type { TrimOptions, TrimResult } from "./types";
+declare const _default: import("vue").DefineComponent<{
+    sigOption: {
+        type: PropType<SigOptions>;
+        default: () => {};
+    };
+    w: {
+        type: StringConstructor;
+        default: string;
+    };
+    h: {
+        type: StringConstructor;
+        default: string;
+    };
+    clearOnResize: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
+    waterMark: {
+        type: PropType<Watermark>;
+        default: () => {};
+    };
+    disabled: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
+    defaultUrl: {
+        type: StringConstructor;
+        default: string;
+    };
+}, {
+    clear: () => void;
+    save: (format?: Parameters<SignaturePad["toDataURL"]>[0], encoderOptions?: number | ToSVGOptions) => string;
+    toDataURL: (format?: Parameters<SignaturePad["toDataURL"]>[0], encoderOptions?: number | ToSVGOptions) => string;
+    toTrimmedDataURL: (format?: TrimOptions["format"], encoderOptions?: number) => string;
+    toSVG: (options?: ToSVGOptions) => string;
+    fromDataURL: (url: string, options?: FromDataUrlOptions) => Promise<void>;
+    fromData: (pointGroups: PointGroup[], options?: FromDataOptions) => void;
+    toData: () => PointGroup[];
+    redraw: () => void;
+    isEmpty: () => boolean;
+    undo: (steps?: number) => void;
+    addWaterMark: (data: Watermark) => void;
+    trim: (options?: TrimOptions) => TrimResult | null;
+    enable: () => void;
+    disable: () => void;
+    addEventListener: (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions) => void;
+    removeEventListener: (type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions) => void;
+    getInstance: () => SignaturePad;
+}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
+    ready: (pad: SignaturePad) => void;
+    begin: () => void;
+    end: () => void;
+    beginStroke: (event: SignatureEvent) => void;
+    endStroke: (event: SignatureEvent) => void;
+    beforeUpdateStroke: (event: SignatureEvent) => void;
+    afterUpdateStroke: (event: SignatureEvent) => void;
+}, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
+    sigOption: {
+        type: PropType<SigOptions>;
+        default: () => {};
+    };
+    w: {
+        type: StringConstructor;
+        default: string;
+    };
+    h: {
+        type: StringConstructor;
+        default: string;
+    };
+    clearOnResize: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
+    waterMark: {
+        type: PropType<Watermark>;
+        default: () => {};
+    };
+    disabled: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
+    defaultUrl: {
+        type: StringConstructor;
+        default: string;
+    };
+}>> & {
+    onBegin?: () => any;
+    onEnd?: () => any;
+    onReady?: (pad: SignaturePad) => any;
+    onBeginStroke?: (event: SignatureEvent) => any;
+    onEndStroke?: (event: SignatureEvent) => any;
+    onBeforeUpdateStroke?: (event: SignatureEvent) => any;
+    onAfterUpdateStroke?: (event: SignatureEvent) => any;
+}, {
+    sigOption: {};
+    w: string;
+    h: string;
+    clearOnResize: boolean;
+    waterMark: {};
+    disabled: boolean;
+    defaultUrl: string;
+}>;
+export default _default;

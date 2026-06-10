@@ -1,0 +1,59 @@
+import { Config } from 'svgo';
+
+type BakeSource = {
+    name: string;
+    content: string;
+};
+type BakeIssueCode = 'ResolveReferenceFailed' | 'DetectDefinitionDuplicate' | 'DetectReferenceCarrierUnsupported' | 'ParseStyleFailed';
+type BakeIssue = {
+    code: BakeIssueCode;
+    message: string;
+    targetId?: string;
+};
+type BakeErrorCode = 'ValidateSourceInvalid' | 'ValidateNameInvalid' | 'ValidateSvgRootInvalid' | 'ParseSvgFailed' | 'OptimizeSvgFailed' | 'ResolveViewBoxFailed';
+declare class BakeError extends Error {
+    readonly code: BakeErrorCode;
+    readonly cause?: unknown;
+    constructor(code: BakeErrorCode, message: string, options?: {
+        cause?: unknown;
+    });
+}
+type IdPolicyOptions = {
+    rewrite?: boolean;
+    unresolved?: 'prefix' | 'preserve';
+    idStyle?: 'named' | 'minified' | 'hashed';
+    delim?: '-' | '_';
+};
+type BakeResult = {
+    name: string;
+    content: string;
+    issues: BakeIssue[];
+};
+type Baker = {
+    bakeIcon(source: BakeSource): BakeResult;
+    bakeIcons(sources: BakeSource[]): BakeResult[];
+};
+type SvgoOptions = Pick<Config, 'multipass' | 'floatPrecision' | 'js2svg' | 'plugins'>;
+type Options = {
+    /**
+     * enable/disable default safe optimization preset
+     * @default true
+     */
+    optimize?: boolean;
+    /**
+     * custom svgo options merged into optimizer
+     */
+    svgoOptions?: SvgoOptions;
+    /**
+     * sprite-safe local id rewriting
+     * @default { rewrite: true, unresolved: 'prefix', idStyle: 'minified', delim: '_' }
+     */
+    idPolicy?: IdPolicyOptions;
+};
+
+declare function bakeIcon(source: BakeSource, options?: Options): BakeResult;
+declare function bakeIcons(sources: BakeSource[], options?: Options): BakeResult[];
+declare function createBaker(options?: Options): Baker;
+
+export { BakeError, bakeIcon, bakeIcons, createBaker };
+export type { BakeErrorCode, BakeIssue, BakeIssueCode, BakeResult, BakeSource, Baker, IdPolicyOptions, Options, SvgoOptions };
