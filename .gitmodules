@@ -4,3 +4,6 @@
 [submodule "frontend/yudao-ui-admin-vue3"]
 	path = frontend/yudao-ui-admin-vue3
 	url = https://github.com/yudaocode/yudao-ui-admin-vue3.git
+[submodule "frontend/yudao-mall-uniapp"]
+	path = frontend/yudao-mall-uniapp
+	url = https://github.com/yudaocode/yudao-mall-uniapp.git
