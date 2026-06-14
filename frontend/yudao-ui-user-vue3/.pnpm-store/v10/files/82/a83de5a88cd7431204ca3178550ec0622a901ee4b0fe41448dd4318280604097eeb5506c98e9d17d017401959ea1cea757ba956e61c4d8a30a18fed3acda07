@@ -1,5 +1,0 @@
-/**
- * @description sanitize html before parsing/importing into editor
- * @author Codex
- */
-export declare function defaultSanitizeHtml(html?: string): string;

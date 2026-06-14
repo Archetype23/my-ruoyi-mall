@@ -1,6 +1,0 @@
-/**
- * @description list style class utils
- */
-import { IDomEditor } from '@wangeditor-next/core';
-export declare function genListColorClassName(color: string): string;
-export declare function resolveListColorAction(editor: IDomEditor | undefined, color: string): 'class' | 'preserve-data' | 'inline';

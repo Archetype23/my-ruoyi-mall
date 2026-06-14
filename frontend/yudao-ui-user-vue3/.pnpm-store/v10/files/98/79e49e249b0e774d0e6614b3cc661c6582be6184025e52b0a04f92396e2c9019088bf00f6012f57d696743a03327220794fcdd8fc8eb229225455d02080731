@@ -1,6 +1,0 @@
-/**
- * @description style to html
- * @author hsuna
- */
-import { IDomEditor } from '@wangeditor-next/core';
-export declare function styleToHtml(node: any, elemHtml: any, editor?: IDomEditor): any;
