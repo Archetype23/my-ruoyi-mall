@@ -64,18 +64,20 @@ podman run --rm -d \
 
 ---
 
-## 四、启动用户端前端（容器）
+## 四、启动用户端前端（uni-app H5，容器）
 
 ```bash
 podman run --rm -d \
   --name ruoyi-user-frontend \
-  -v /mnt/data_d/Projects/ruoyi/frontend/yudao-ui-user-vue3:/workspace \
+  -v /mnt/data_d/Projects/ruoyi/frontend/yudao-mall-uniapp:/workspace \
   -v ruoyi-pnpm-store:/root/.local/share/pnpm/store \
   -w /workspace \
-  -p 5175:5173 \
+  -p 5175:3000 \
   docker.io/library/node:20-alpine \
-  sh -c "npm install -g pnpm && CI=true pnpm install && pnpm dev --host 0.0.0.0 --port 5173"
+  sh -c "npm install -g pnpm && CI=true pnpm install && pnpm dev:h5"
 ```
+
+> 用户端基于 uni-app，可编译为 H5 / 微信小程序 / App 多端。
 
 ---
 
@@ -84,7 +86,7 @@ podman run --rm -d \
 | 服务 | 地址 | 登录凭证 |
 |------|------|----------|
 | 管理端 | http://localhost:5174 | admin / admin123 |
-| 用户端 | http://localhost:5175 | 15601691300 / admin123 |
+| 用户端(H5) | http://localhost:5175 | 手机号登录（需先注册会员） |
 | 后端 API | http://localhost:48080 | - |
 | API 文档 | http://localhost:48080/doc.html | - |
 
