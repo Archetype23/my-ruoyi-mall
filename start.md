@@ -235,7 +235,24 @@ curl -sS -X POST "http://127.0.0.1:48080/app-api/group-buy/head/open" \
 
 ---
 
-## 八、停止所有服务
+## 八、一键后台重启全部服务
+
+已提供脚本 `restart-services.sh`，会后台重启后端 + 管理端 + 用户端（MySQL/Redis 保持运行）：
+
+```bash
+cd /mnt/data_d/Projects/ruoyi
+./restart-services.sh
+```
+
+执行后约 20 秒，三个服务即可访问：
+
+- 管理后台：http://localhost:5174
+- 用户端 H5：http://localhost:5175
+- 后端 API：http://localhost:48080
+
+---
+
+## 九、停止所有服务
 
 ```bash
 # 停止前端容器
@@ -250,7 +267,7 @@ podman stop ruoyi-mysql ruoyi-redis
 
 ---
 
-## 九、重启单个服务
+## 十、重启单个服务
 
 ```bash
 # 重启后端（代码修改后需重新编译）
@@ -267,7 +284,7 @@ podman restart ruoyi-user-frontend
 
 ---
 
-## 十、后端修改后重新编译
+## 十一、后端修改后重新编译
 
 ```bash
 # 不使用 clean，避免 podman FUSE 残留文件删除失败
@@ -281,7 +298,7 @@ podman run --rm \
 
 ---
 
-## 十一、关键文件位置
+## 十二、关键文件位置
 
 | 模块 | 路径 |
 |------|------|
@@ -293,12 +310,13 @@ podman run --rm \
 | 管理端拼团 API | `frontend/yudao-ui-admin-vue3/src/api/mall/promotion/groupbuy/` |
 | 用户端拼团页面 | `frontend/yudao-mall-uniapp/pages/groupbuy/` |
 | 用户端拼团 API | `frontend/yudao-mall-uniapp/sheep/api/promotion/groupbuy.js` |
+| 一键重启脚本 | `restart-services.sh` |
 | 改造文档 | `Docs/社区团购系统改造文档.md` |
 | 设计文档 | `Docs/软件工程项目设计说明书_陈小庆.pdf` |
 
 ---
 
-## 十二、当前服务状态
+## 十三、当前服务状态
 
 ```bash
 # 检查端口
@@ -313,9 +331,10 @@ tail -f /tmp/yudao.log
 
 ---
 
-## 十三、已知遗留（不影响核心流程）
+## 十四、已知遗留
 
-1. **支付回调**：拼团开团后未与 pay 模块对接（设计上"立即付款"，但当前只到创建 trade_order 状态）
-2. **团长核销码**：用 `orderId` 作为核销码（与设计文档的 6 位验证码有差异，可后续优化）
-3. **砍价模块**：`promotion_bargain_activity` 表缺失（yudao 上游遗留）
-4. **退款链路**：拼团失败时 `refundFailedMember` 仅打印日志，未完整接 yudao pay 模块
+1. **支付回调未接入**：`GroupBuyHeadServiceImpl.onMemberPaid(Long orderId)` 已写好，但 pay 模块的支付成功回调里没有调用它。因此拼团成员付款后不会自动更新为 PAID，团单也不会自动成团。
+2. **开团/参团未创建 trade_order**：当前 `openHead`/`joinHead` 只生成 `group_buy_*` 记录，没有生成 `trade_order`。用户端需要再调订单/结算接口真正下单并支付。
+3. **团长核销码**：用 `orderId` 作为核销码（与设计文档的 6 位验证码有差异，可后续优化）。
+4. **砍价模块**：`promotion_bargain_activity` 表缺失（yudao 上游遗留，与拼团无关）。
+5. **退款链路**：拼团失败时 `refundFailedMember` 仅打印日志，未完整接 yudao pay 模块。
