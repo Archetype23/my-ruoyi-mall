@@ -66,9 +66,15 @@ podman exec -i ruoyi-mysql mysql -u root -proot ruoyi-vue-pro \
 podman exec -i ruoyi-mysql mysql -u root -proot ruoyi-vue-pro \
   --default-character-set=utf8mb4 < \
   /mnt/data_d/Projects/ruoyi/backend/ruoyi-vue-pro/sql/mysql/group-buy-menu-cleanup.sql
+
+# 6. 修复 uniapp H5 启动：DIY 模板字段 + 默认模板数据
+podman exec -i ruoyi-mysql mysql -u root -proot ruoyi-vue-pro \
+  --default-character-set=utf8mb4 < \
+  /mnt/data_d/Projects/ruoyi/backend/ruoyi-vue-pro/sql/mysql/group-buy-uniapp-fix.sql
 ```
 
 > 所有 SQL 文件都是**幂等**的（多次执行安全）。
+> 如果 `promotion_diy_template.property` 字段仍是 `varchar(255)`，需要先执行第 6 步再添加模板内容。
 
 ---
 
@@ -121,7 +127,7 @@ nohup pnpm dev --host 0.0.0.0 --port 5173 > /tmp/admin-frontend.log 2>&1 &
 
 ## 五、启动用户端前端（uni-app H5）
 
-### 方式 A：容器方式
+### 方式 A：容器方式（推荐）
 
 ```bash
 podman run -d --name ruoyi-user-frontend \
@@ -130,29 +136,18 @@ podman run -d --name ruoyi-user-frontend \
   -w /workspace \
   -p 5175:3000 \
   docker.io/library/node:20-alpine \
-  sh -c "npm install -g pnpm && CI=true pnpm install && pnpm dev:h5"
+  sh -c "npm install -g pnpm && CI=true pnpm install && UNI_INPUT_DIR=/workspace pnpm dev:h5"
 ```
 
-### 方式 B：宿主机方式（需要 symlink src/）
+> `UNI_INPUT_DIR=/workspace` 必须显式传入，否则 uni CLI 默认会去 `cwd/src/` 找 `manifest.json`，导致启动失败。
+
+### 方式 B：宿主机方式
 
 ```bash
 cd /mnt/data_d/Projects/ruoyi/frontend/yudao-mall-uniapp
-# 创建 src/ 软链（uni CLI 模式需要）
-ln -sf ../package.json src/package.json
-ln -sf ../App.vue src/App.vue
-ln -sf ../main.js src/main.js
-ln -sf ../pages.json src/pages.json
-ln -sf ../pages src/pages
-ln -sf ../sheep src/sheep
-ln -sf ../static src/static
-ln -sf ../uni_modules src/uni_modules
-ln -sf ../uni.scss src/uni.scss
-ln -sf ../utils src/utils
-ln -sf ../index.html src/index.html
-ln -sf ../manifest.json src/manifest.json
-
-npm install
-nohup npm run dev:h5 > /tmp/uni-frontend.log 2>&1 &
+npm install -g pnpm
+pnpm install
+nohup env UNI_INPUT_DIR=$(pwd) pnpm dev:h5 > /tmp/uni-frontend.log 2>&1 &
 ```
 
 > 用户端基于 uni-app，可编译为 H5 / 微信小程序 / App 多端。当前用 H5 模式。
