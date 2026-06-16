@@ -214,23 +214,43 @@ curl -sS "http://127.0.0.1:48080/admin-api/group-buy/activity/page?pageNo=1&page
 curl -sS "http://127.0.0.1:48080/admin-api/group-buy/head/page?pageNo=1&pageSize=3" \
   -H "tenant-id: 1" -H "Authorization: Bearer $TA"
 
-# 用户开团（需要先登录获取 member token）
-# 1. 发送短信
-curl -sS -X POST "http://127.0.0.1:48080/app-api/member/auth/send-sms-code" \
+# 用户开团/参团走标准 trade order，不再直接调用 /group-buy/head/open
+U1=$(curl -sS -X POST "http://127.0.0.1:48080/app-api/member/auth/sms-login" \
   -H "Content-Type: application/json" -H "tenant-id: 1" \
-  -d '{"mobile":"13800000001","scene":1}'
-
-# 2. 用验证码 9999 登录
-MEMBER_TOKEN=$(curl -sS -X POST "http://127.0.0.1:48080/app-api/member/auth/sms-login" \
-  -H "Content-Type: application/json" -H "tenant-id: 1" \
-  -d '{"mobile":"13800000001","code":"9999"}' | \
+  -d '{"mobile":"13900000001","code":"9999"}' | \
   python3 -c "import sys,json;print(json.load(sys.stdin)['data']['accessToken'])")
 
-# 3. 开团
-curl -sS -X POST "http://127.0.0.1:48080/app-api/group-buy/head/open" \
-  -H "tenant-id: 1" -H "Authorization: Bearer $MEMBER_TOKEN" \
+U2=$(curl -sS -X POST "http://127.0.0.1:48080/app-api/member/auth/sms-login" \
+  -H "Content-Type: application/json" -H "tenant-id: 1" \
+  -d '{"mobile":"13900000002","code":"9999"}' | \
+  python3 -c "import sys,json;print(json.load(sys.stdin)['data']['accessToken'])")
+
+# 1. 用户 1 创建开团订单。activity 2 对应 skuId 7，2 人成团
+curl -sS -X POST "http://127.0.0.1:48080/app-api/trade/order/create" \
+  -H "tenant-id: 1" -H "Authorization: $U1" \
   -H "Content-Type: application/json" \
-  -d '{"activityId":1,"skuId":1,"count":1}'
+  -d '{"items":[{"skuId":7,"count":1}],"pointStatus":false,"deliveryType":1,"addressId":1,"groupBuyActivityId":2}'
+
+# 2. 用返回的 payOrderId 钱包支付
+curl -sS -X POST "http://127.0.0.1:48080/app-api/pay/order/submit" \
+  -H "tenant-id: 1" -H "Authorization: $U1" \
+  -H "Content-Type: application/json" \
+  -d '{"id":<payOrderId1>,"channelCode":"wallet"}'
+
+# 3. 查询 trade_order.group_buy_head_id，作为用户 2 参团 groupBuyHeadId
+podman exec ruoyi-mysql mysql -u root -proot ruoyi-vue-pro \
+  -e "SELECT id,pay_status+0,status,group_buy_head_id FROM trade_order ORDER BY id DESC LIMIT 3;"
+
+# 4. 用户 2 创建参团订单并支付
+curl -sS -X POST "http://127.0.0.1:48080/app-api/trade/order/create" \
+  -H "tenant-id: 1" -H "Authorization: $U2" \
+  -H "Content-Type: application/json" \
+  -d '{"items":[{"skuId":7,"count":1}],"pointStatus":false,"deliveryType":1,"addressId":2,"groupBuyActivityId":2,"groupBuyHeadId":<headId>}'
+
+curl -sS -X POST "http://127.0.0.1:48080/app-api/pay/order/submit" \
+  -H "tenant-id: 1" -H "Authorization: $U2" \
+  -H "Content-Type: application/json" \
+  -d '{"id":<payOrderId2>,"channelCode":"wallet"}'
 ```
 
 ---
@@ -333,8 +353,8 @@ tail -f /tmp/yudao.log
 
 ## 十四、已知遗留
 
-1. **支付回调未接入**：`GroupBuyHeadServiceImpl.onMemberPaid(Long orderId)` 已写好，但 pay 模块的支付成功回调里没有调用它。因此拼团成员付款后不会自动更新为 PAID，团单也不会自动成团。
-2. **开团/参团未创建 trade_order**：当前 `openHead`/`joinHead` 只生成 `group_buy_*` 记录，没有生成 `trade_order`。用户端需要再调订单/结算接口真正下单并支付。
-3. **团长核销码**：用 `orderId` 作为核销码（与设计文档的 6 位验证码有差异，可后续优化）。
-4. **砍价模块**：`promotion_bargain_activity` 表缺失（yudao 上游遗留，与拼团无关）。
-5. **退款链路**：拼团失败时 `refundFailedMember` 仅打印日志，未完整接 yudao pay 模块。
+1. **退款链路**：拼团失败时 `refundFailedMember` 仍未完整接入 yudao pay refund，需要补自动退款和状态回写。
+2. **团长核销码**：用 `orderId` 作为核销码（与设计文档的 6 位验证码有差异，可后续优化）。
+3. **首页装修**：默认 DIY 模板内容不足，首页/我的页仍需要补运营组件。
+4. **定时任务**：需要在容器环境里单独验证 `GroupBuyHeadExpireJob`、`PayNotifyJob` 的调度配置。
+5. **砍价模块**：`promotion_bargain_activity` 表缺失（yudao 上游遗留，与拼团无关）。
