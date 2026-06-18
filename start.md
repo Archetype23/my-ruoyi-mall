@@ -71,6 +71,16 @@ podman exec -i ruoyi-mysql mysql -u root -proot ruoyi-vue-pro \
 podman exec -i ruoyi-mysql mysql -u root -proot ruoyi-vue-pro \
   --default-character-set=utf8mb4 < \
   /mnt/data_d/Projects/ruoyi/backend/ruoyi-vue-pro/sql/mysql/group-buy-uniapp-fix.sql
+
+# 7. Quartz 定时任务表（拼团过期任务需要）
+podman exec -i ruoyi-mysql mysql -u root -proot ruoyi-vue-pro \
+  --default-character-set=utf8mb4 < \
+  /mnt/data_d/Projects/ruoyi/backend/ruoyi-vue-pro/sql/mysql/quartz.sql
+
+# 8. 运行时数据修复：商品配送方式、自提门店、演示账号密码、mock 支付渠道、拼团过期任务
+podman exec -i ruoyi-mysql mysql -u root -proot ruoyi-vue-pro \
+  --default-character-set=utf8mb4 < \
+  /mnt/data_d/Projects/ruoyi/backend/ruoyi-vue-pro/sql/mysql/group-buy-runtime-fix.sql
 ```
 
 > 所有 SQL 文件都是**幂等**的（多次执行安全）。
@@ -83,12 +93,14 @@ podman exec -i ruoyi-mysql mysql -u root -proot ruoyi-vue-pro \
 ```bash
 # 1. 编译打包（首次需下载依赖，约 3-5 分钟）
 #    注意：不用 clean，避免 podman FUSE overlay 残留文件导致删除失败
-podman run --rm \
+#    将宿主机 ~/.m2/repository 挂载进去，可复用已下载依赖并避免网络问题
+podman run --rm --network host \
   -v /mnt/data_d/Projects/ruoyi/backend/ruoyi-vue-pro:/workspace \
-  -v ruoyi-m2:/root/.m2 \
+  -v "$HOME/.m2/repository:/root/.m2/repository" \
+  -v "$HOME/.m2/settings-docker.xml:/root/.m2/settings.xml" \
   -w /workspace \
   maven:3.9-eclipse-temurin-17 \
-  mvn install -pl yudao-module-mall/yudao-module-groupbuy,yudao-server -am -DskipTests -q
+  mvn install -pl yudao-server -am -DskipTests -T 1C
 
 # 2. 启动后端（指定 local profile）
 nohup java -jar /mnt/data_d/Projects/ruoyi/backend/ruoyi-vue-pro/yudao-server/target/yudao-server.jar \
