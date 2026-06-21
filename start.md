@@ -18,7 +18,7 @@
 
 ```bash
 # MySQL 8（首次运行需要，数据持久化在 volume 中）
-podman run -d --name ruoyi-mysql \
+podman run -d --name ruoyi-mysql --restart=always \
   -e MYSQL_DATABASE=ruoyi-vue-pro \
   -e MYSQL_ROOT_PASSWORD=root \
   -p 3306:3306 \
@@ -26,12 +26,13 @@ podman run -d --name ruoyi-mysql \
   docker.io/library/mysql:8
 
 # Redis 7
-podman run -d --name ruoyi-redis \
+podman run -d --name ruoyi-redis --restart=always \
   -p 6379:6379 \
   docker.io/library/redis:7-alpine
 ```
 
 > 如果容器已存在但未运行：`podman start ruoyi-mysql ruoyi-redis`
+> 已存在但没设重启策略：`podman update --restart=always ruoyi-mysql ruoyi-redis`
 
 ---
 
@@ -102,13 +103,16 @@ podman run --rm --network host \
   maven:3.9-eclipse-temurin-17 \
   mvn install -pl yudao-server -am -DskipTests -T 1C
 
-# 2. 启动后端（指定 local profile）
+# 2. 启动后端（指定 local profile，关闭 mock 登录）
+#    --yudao.security.mock-enable=false 必须加，否则空 token 会触发 NumberFormatException
 nohup java -jar /mnt/data_d/Projects/ruoyi/backend/ruoyi-vue-pro/yudao-server/target/yudao-server.jar \
-  --spring.profiles.active=local > /tmp/yudao.log 2>&1 &
+  --spring.profiles.active=local \
+  --yudao.security.mock-enable=false \
+  > /tmp/yudao.log 2>&1 &
 echo "Backend PID: $!"
 ```
 
-后端启动成功标志：控制台输出 `项目启动成功！` 或访问 `http://localhost:48080/` 返回 `{"code":401,"msg":"账号未登录"}`
+后端启动成功标志：控制台输出 `项目启动成功！` 或访问 `http://127.0.0.1:48080/` 返回 `{"code":401,"msg":"账号未登录"}`
 
 ---
 
@@ -117,7 +121,7 @@ echo "Backend PID: $!"
 ### 方式 A：容器方式（推荐）
 
 ```bash
-podman run -d --name ruoyi-admin-frontend \
+podman run -d --name ruoyi-admin-frontend --restart=always \
   -v /mnt/data_d/Projects/ruoyi/frontend/yudao-ui-admin-vue3:/workspace \
   -v ruoyi-pnpm-store:/root/.local/share/pnpm/store \
   -w /workspace \
@@ -142,7 +146,7 @@ nohup pnpm dev --host 0.0.0.0 --port 5173 > /tmp/admin-frontend.log 2>&1 &
 ### 方式 A：容器方式（推荐）
 
 ```bash
-podman run -d --name ruoyi-user-frontend \
+podman run -d --name ruoyi-user-frontend --restart=always \
   -v /mnt/data_d/Projects/ruoyi/frontend/yudao-mall-uniapp:/workspace \
   -v ruoyi-pnpm-store:/root/.local/share/pnpm/store \
   -w /workspace \
@@ -170,19 +174,14 @@ nohup env UNI_INPUT_DIR=$(pwd) pnpm dev:h5 > /tmp/uni-frontend.log 2>&1 &
 
 | 服务 | 地址 | 登录凭证 |
 |------|------|----------|
-| **管理后台** | http://localhost:5174 | admin / admin123（系统管理员）<br>zhangsan01 / admin123（社区A团长）<br>lisi02 / admin123（社区B团长）|
-| **用户端 H5** | http://localhost:5175 | 手机号 13800000001 验证码 9999 |
-| **后端 API** | http://localhost:48080 | - |
-| **API 文档** | http://localhost:48080/doc.html | - |
-| **MySQL** | localhost:3306 | root / root |
-| **Redis** | localhost:6379 | 无密码 |
+| **管理后台** | http://127.0.0.1:5174 | admin / admin123（系统管理员，租户：西北师大团购）<br>mall001 / admin123（商家，租户：164）|
+| **用户端 H5** | http://127.0.0.1:5175 | 13800000001 / admin123（张同学）<br>13900000001 / admin123<br>13900000002 / admin123 |
+| **后端 API** | http://127.0.0.1:48080 | - |
+| **API 文档** | http://127.0.0.1:48080/doc.html | - |
+| **MySQL** | 127.0.0.1:3306 | root / root |
+| **Redis** | 127.0.0.1:6379 | 无密码 |
 
-### 租户切换
-
-请求头加 `tenant-id: 1/162/163` 切换租户：
-- `tenant-id: 1` → 系统管理员（菜单齐全）
-- `tenant-id: 162` → 社区 A 团长（zhangsan01）
-- `tenant-id: 163` → 社区 B 团长（lisi02）
+> **注意**：浏览器访问必须用 `127.0.0.1` 而不是 `localhost`，否则浏览器可能解析为 IPv6 导致连接失败。
 
 ---
 
@@ -190,24 +189,27 @@ nohup env UNI_INPUT_DIR=$(pwd) pnpm dev:h5 > /tmp/uni-frontend.log 2>&1 &
 
 ### 7.1 管理员视角
 
-1. 访问 http://localhost:5174 用 `admin/admin123` 登录
+1. 访问 http://127.0.0.1:5174 用 `admin/admin123` 登录（租户填「西北师大团购」）
 2. 左侧菜单：**营销中心** → **社区拼团** → 三个子菜单
    - **拼团活动**：增删改查、关闭活动
    - **团单管理**：查看所有团单（多状态过滤）
-   - **团长核销**：仅团长角色看到（zhangsan01）
+   - **团长核销**：核销自提订单
 
-### 7.2 团长视角
+### 7.2 商家视角
 
-1. 用 `zhangsan01/admin123` 登录（tenant-id 162）
-2. **社区拼团 / 团长核销**：输入订单号 → 核销
-3. **社区拼团 / 团单管理**：查看本社区的团单
+1. 用 `mall001/admin123` 登录（租户 164）
+2. **商品管理**：创建/编辑商品
+3. **社区拼团 / 拼团活动**：创建拼团活动（选商品、设拼团价/人数/库存/时间）
+4. **社区拼团 / 团单管理**：查看本租户团单
+5. **社区拼团 / 团长核销**：输入订单号 → 核销自提订单
 
 ### 7.3 用户视角
 
-1. 访问 http://localhost:5175 用手机号 13800000001 + 验证码 9999 登录
-2. **社区拼团** → 选活动 → 发起拼团
+1. 访问 http://127.0.0.1:5175 用 `13800000001 / admin123` 登录
+2. **拼团** → 选活动 → 发起拼团
 3. 我的拼团 → 看到已开团
-4. 拼团分享链接给其他用户 → 参团
+4. 其他用户（13900000001 / 13900000002）参团 → 全员支付 → 成团
+5. 商家在管理后台核销自提
 
 ### 7.4 API 冒烟测试
 
@@ -226,15 +228,15 @@ curl -sS "http://127.0.0.1:48080/admin-api/group-buy/activity/page?pageNo=1&page
 curl -sS "http://127.0.0.1:48080/admin-api/group-buy/head/page?pageNo=1&pageSize=3" \
   -H "tenant-id: 1" -H "Authorization: Bearer $TA"
 
-# 用户开团/参团走标准 trade order，不再直接调用 /group-buy/head/open
-U1=$(curl -sS -X POST "http://127.0.0.1:48080/app-api/member/auth/sms-login" \
+# 用户登录（H5 用密码登录，不是验证码）
+U1=$(curl -sS -X POST "http://127.0.0.1:48080/app-api/member/auth/login" \
   -H "Content-Type: application/json" -H "tenant-id: 1" \
-  -d '{"mobile":"13900000001","code":"9999"}' | \
+  -d '{"mobile":"13800000001","password":"admin123"}' | \
   python3 -c "import sys,json;print(json.load(sys.stdin)['data']['accessToken'])")
 
-U2=$(curl -sS -X POST "http://127.0.0.1:48080/app-api/member/auth/sms-login" \
+U2=$(curl -sS -X POST "http://127.0.0.1:48080/app-api/member/auth/login" \
   -H "Content-Type: application/json" -H "tenant-id: 1" \
-  -d '{"mobile":"13900000002","code":"9999"}' | \
+  -d '{"mobile":"13900000001","password":"admin123"}' | \
   python3 -c "import sys,json;print(json.load(sys.stdin)['data']['accessToken'])")
 
 # 1. 用户 1 创建开团订单。activity 2 对应 skuId 7，2 人成团
@@ -267,20 +269,26 @@ curl -sS -X POST "http://127.0.0.1:48080/app-api/pay/order/submit" \
 
 ---
 
-## 八、一键后台重启全部服务
+## 八、一键重启全部服务
 
-已提供脚本 `restart-services.sh`，会后台重启后端 + 管理端 + 用户端（MySQL/Redis 保持运行）：
+已提供脚本 `restart-services.sh`，会按正确顺序启动全部服务（MySQL → Redis → 后端 → 前端），并轮询等待就绪：
 
 ```bash
 cd /mnt/data_d/Projects/ruoyi
 ./restart-services.sh
 ```
 
-执行后约 20 秒，三个服务即可访问：
+脚本会自动完成：
+1. 启动 MySQL / Redis 容器（设 `restart=always`）并等待就绪
+2. 用 `fuser -k 48080/tcp` 杀旧后端，启动新后端（带 `--yudao.security.mock-enable=false`）
+3. 重启前端容器（优先 `podman restart`，不存在才 `podman run`）
+4. 轮询等待所有服务 HTTP 200
 
-- 管理后台：http://localhost:5174
-- 用户端 H5：http://localhost:5175
-- 后端 API：http://localhost:48080
+执行后访问地址：
+
+- 管理后台：http://127.0.0.1:5174
+- 用户端 H5：http://127.0.0.1:5175
+- 后端 API：http://127.0.0.1:48080
 
 ---
 
@@ -290,8 +298,8 @@ cd /mnt/data_d/Projects/ruoyi
 # 停止前端容器
 podman stop ruoyi-admin-frontend ruoyi-user-frontend
 
-# 停止后端
-kill $(pgrep -f yudao-server.jar)
+# 停止后端（用 fuser，不要用 pkill -f yudao-server.jar，会误杀 shell）
+fuser -k 48080/tcp
 
 # 停止数据库
 podman stop ruoyi-mysql ruoyi-redis
@@ -303,9 +311,11 @@ podman stop ruoyi-mysql ruoyi-redis
 
 ```bash
 # 重启后端（代码修改后需重新编译）
-kill $(pgrep -f yudao-server.jar)
-java -jar /mnt/data_d/Projects/ruoyi/backend/ruoyi-vue-pro/yudao-server/target/yudao-server.jar \
-  --spring.profiles.active=local &
+fuser -k 48080/tcp; sleep 2
+nohup java -jar /mnt/data_d/Projects/ruoyi/backend/ruoyi-vue-pro/yudao-server/target/yudao-server.jar \
+  --spring.profiles.active=local \
+  --yudao.security.mock-enable=false \
+  > /tmp/yudao.log 2>&1 &
 
 # 重启管理端
 podman restart ruoyi-admin-frontend
@@ -319,14 +329,18 @@ podman restart ruoyi-user-frontend
 ## 十一、后端修改后重新编译
 
 ```bash
-# 不使用 clean，避免 podman FUSE 残留文件删除失败
-podman run --rm \
+# 将宿主机 ~/.m2/repository 挂载进去，复用已下载依赖
+# settings.xml 含阿里云镜像，加速下载
+podman run --rm --network host \
   -v /mnt/data_d/Projects/ruoyi/backend/ruoyi-vue-pro:/workspace \
-  -v ruoyi-m2:/root/.m2 \
+  -v "$HOME/.m2/repository:/root/.m2/repository" \
+  -v /tmp/opencode/settings.xml:/root/.m2/settings.xml \
   -w /workspace \
   maven:3.9-eclipse-temurin-17 \
-  mvn install -pl yudao-module-mall/yudao-module-groupbuy,yudao-server -am -DskipTests -q
+  mvn install -pl yudao-server -am -DskipTests -T 1C
 ```
+
+> 如果 `/tmp/opencode/settings.xml` 不存在，需先创建（内容见 `restart-services.sh` 或项目文档）。
 
 ---
 
@@ -365,8 +379,8 @@ tail -f /tmp/yudao.log
 
 ## 十四、已知遗留
 
-1. **退款链路**：拼团失败时 `refundFailedMember` 仍未完整接入 yudao pay refund，需要补自动退款和状态回写。
-2. **团长核销码**：用 `orderId` 作为核销码（与设计文档的 6 位验证码有差异，可后续优化）。
-3. **首页装修**：默认 DIY 模板内容不足，首页/我的页仍需要补运营组件。
-4. **定时任务**：需要在容器环境里单独验证 `GroupBuyHeadExpireJob`、`PayNotifyJob` 的调度配置。
+1. **Mock 支付**：本地演示用 `mock` 支付渠道，生产环境需替换为真实支付（微信/支付宝）。
+2. **验证码关闭**：`application-local.yaml` 已关闭图片验证码（`yudao.captcha.enable: false`），生产环境需恢复。
+3. **团长核销码**：用 `orderId` 作为核销码（与设计文档的 6 位验证码有差异，可后续优化）。
+4. **首页装修**：默认 DIY 模板内容不足，首页/我的页仍需要补运营组件。
 5. **砍价模块**：`promotion_bargain_activity` 表缺失（yudao 上游遗留，与拼团无关）。
