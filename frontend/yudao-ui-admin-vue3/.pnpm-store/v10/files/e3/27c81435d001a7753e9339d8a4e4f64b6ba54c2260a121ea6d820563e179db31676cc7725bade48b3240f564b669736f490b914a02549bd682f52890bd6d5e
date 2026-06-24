@@ -1,0 +1,9 @@
+/**
+ * @description menus entry
+ * @author wangfupeng
+ */
+import Toolbar from './bar/Toolbar';
+export { registerMenu } from './register';
+export type { IButtonMenu, IDropPanelMenu, IModalMenu, IOption, IRegisterMenuConf, ISelectMenu, } from './interface';
+export { genModalButtonElems, genModalInputElems, genModalTextareaElems, } from './panel-and-modal/Modal';
+export { Toolbar };

@@ -1,0 +1,7 @@
+/**
+ * @description textStyle to html
+ * @author wangfupeng
+ */
+import { IDomEditor } from '@wangeditor-next/core';
+import { Descendant } from 'slate';
+export declare function styleToHtml(node: Descendant, elemHtml: string, editor?: IDomEditor): string;

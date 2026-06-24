@@ -1,0 +1,7 @@
+/**
+ * @description 注册 module
+ * @author wangfupeng
+ */
+import type { IModuleConf } from '@wangeditor-next/core';
+declare function registerModule(module: Partial<IModuleConf>): void;
+export default registerModule;

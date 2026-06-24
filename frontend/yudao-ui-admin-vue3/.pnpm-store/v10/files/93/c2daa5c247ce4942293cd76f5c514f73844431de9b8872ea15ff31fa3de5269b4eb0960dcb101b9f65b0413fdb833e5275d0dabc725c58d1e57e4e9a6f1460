@@ -1,0 +1,44 @@
+{
+    "name": "@types/jsoneditor",
+    "version": "9.9.6",
+    "description": "TypeScript definitions for jsoneditor",
+    "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/jsoneditor",
+    "license": "MIT",
+    "contributors": [
+        {
+            "name": "Alejandro Sánchez",
+            "githubUsername": "alejo90",
+            "url": "https://github.com/alejo90"
+        },
+        {
+            "name": "Errietta Kostala",
+            "githubUsername": "errietta",
+            "url": "https://github.com/errietta"
+        },
+        {
+            "name": "Adam Vigneaux",
+            "githubUsername": "adamvig",
+            "url": "https://github.com/adamvig"
+        },
+        {
+            "name": "Joep Kockelkorn",
+            "githubUsername": "joepkockelkorn",
+            "url": "https://github.com/joepkockelkorn"
+        }
+    ],
+    "main": "",
+    "types": "index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/jsoneditor"
+    },
+    "scripts": {},
+    "dependencies": {
+        "@types/ace": "*",
+        "ajv": "^6.12.0"
+    },
+    "peerDependencies": {},
+    "typesPublisherContentHash": "5da42b518d958be18f1ee852518129d269f951a415625f444d095c8fcf82eaf0",
+    "typeScriptVersion": "5.2"
+}

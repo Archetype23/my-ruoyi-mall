@@ -1,0 +1,19 @@
+/**
+ * @description editor entry
+ * @author wangfupeng
+ */
+import './assets/index.less';
+import './utils/browser-polyfill';
+import './utils/node-polyfill';
+import './locale/index';
+import './register-builtin-modules/index';
+import './init-default-config';
+import Boot from './Boot';
+export { Boot };
+export type { ClassStylePolicy, IButtonMenu, IClassStyleUnsupportedPayload, IDomEditor, IDropPanelMenu, IEditorConfig, IModalMenu, IModuleConf, ISelectMenu, IToolbarConfig, IUploadConfig, StyleClassTokenType, TextStyleMode, } from '@wangeditor-next/core';
+export { createUploader, DomEditor, genModalButtonElems, genModalInputElems, genModalTextareaElems, getTextStyleMode, i18nAddResources, i18nChangeLanguage, i18nGetResources, t, Toolbar, } from '@wangeditor-next/core';
+export type { Descendant as SlateDescendant, Location as SlateLocation, } from 'slate';
+export { Editor as SlateEditor, Element as SlateElement, Node as SlateNode, Path as SlatePath, Point as SlatePoint, Range as SlateRange, Text as SlateText, Transforms as SlateTransforms, } from 'slate';
+export { createEditor, createToolbar } from './create';
+declare const _default: {};
+export default _default;

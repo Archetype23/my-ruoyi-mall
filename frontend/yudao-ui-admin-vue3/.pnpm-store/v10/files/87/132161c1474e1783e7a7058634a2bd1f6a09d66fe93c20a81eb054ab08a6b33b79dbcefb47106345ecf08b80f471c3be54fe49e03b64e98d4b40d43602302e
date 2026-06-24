@@ -1,0 +1,24 @@
+import type { Dayjs } from 'dayjs';
+import type { SolarDay, SolarTime } from 'tyme4ts';
+import type { LunarUnit } from './types';
+/**
+ * 检查值是否为null或undefined
+ */
+export declare const isNil: (value: unknown) => value is null | undefined;
+/**
+ * 将任意类型的参数转换为数字，如果无法转换则返回undefined
+ */
+export declare const transformToNumber: (arg: unknown) => number | undefined;
+/**
+ * 验证农历日期时间的各个部分是否有效
+ * @throws {Error} 当任何部分超出有效范围时抛出错误
+ */
+export declare const verifyLunar: (year: number, month: number, day: number, hour: number, minute: number, second: number) => void;
+/**
+ * 将tyme4ts的日期时间对象转换为JavaScript Date对象
+ */
+export declare const tymeToDate: (tyme: SolarTime | SolarDay, dayjsInterface?: Dayjs) => Date;
+/**
+ * 清除单位前缀中的"lunar-"部分，并将结果转换为LunarUnit类型
+ */
+export declare const clearLunarUnitPrefix: (unit: string) => LunarUnit;

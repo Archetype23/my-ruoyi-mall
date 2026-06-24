@@ -1,0 +1,77 @@
+{
+  "name": "vue-types",
+  "version": "6.0.0",
+  "description": "Prop types utility for Vue",
+  "author": "Marco Solazzi",
+  "license": "MIT",
+  "homepage": "https://vue-types.codeful.dev/",
+  "main": "dist/index.cjs",
+  "type": "module",
+  "sideEffects": false,
+  "unpkg": "dist/index.umd.js",
+  "umd:main": "dist/index.umd.js",
+  "module": "dist/index.mjs",
+  "esmodule": "dist/index.mjs",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      },
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      }
+    },
+    "./shim": {
+      "require": {
+        "types": "./dist/shim.d.cts",
+        "default": "./dist/shim.cjs"
+      },
+      "import": {
+        "types": "./dist/shim.d.mts",
+        "default": "./dist/shim.mjs"
+      }
+    }
+  },
+  "types": "dist/index.d.ts",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "dist",
+    "shim"
+  ],
+  "keywords": [
+    "vue",
+    "props"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dwightjack/vue-types.git",
+    "directory": "packages/core"
+  },
+  "bugs": "https://github.com/dwightjack/vue-types/issues",
+  "peerDependencies": {
+    "vue": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.17.11",
+    "typescript": "5.6.3",
+    "unbuild": "2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "vue": {
+      "optional": true
+    }
+  },
+  "scripts": {
+    "build": "unbuild",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest watch",
+    "lint": "pnpm run \"/^lint:.*/\"",
+    "lint:npm": "publint .",
+    "lint:type": "tsc --noEmit --skipLibCheck",
+    "lint:js": "eslint '{src,__tests__,.}/**/*.{ts,js,cjs}'"
+  }
+}

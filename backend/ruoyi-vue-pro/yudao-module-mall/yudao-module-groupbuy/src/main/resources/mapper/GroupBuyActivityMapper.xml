@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.groupbuy.dal.mysql.GroupBuyActivityMapper">
+
+    <update id="decrStock">
+        UPDATE group_buy_activity
+        SET stock_used = stock_used + #{count},
+            update_time = NOW()
+        WHERE id = #{id}
+          AND deleted = 0
+          AND stock_used + #{count} &lt;= stock_total
+    </update>
+
+</mapper>

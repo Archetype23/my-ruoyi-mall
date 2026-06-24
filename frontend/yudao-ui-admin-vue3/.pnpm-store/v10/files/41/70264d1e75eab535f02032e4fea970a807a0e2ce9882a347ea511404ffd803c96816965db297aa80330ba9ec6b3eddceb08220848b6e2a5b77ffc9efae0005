@@ -1,0 +1,10 @@
+/**
+ * @description normalize link url
+ * @author OpenAI
+ */
+/**
+ * Normalize URLs imported from HTML editors such as Microsoft Office.
+ * Formatting whitespace inside href values should not survive as literal
+ * line breaks, while real spaces should be serialized as %20.
+ */
+export declare function normalizeLinkUrl(url: string): string;

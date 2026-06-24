@@ -1,0 +1,4 @@
+//#region src/index.ts
+var src_default = { extends: ["plugin:@unocss/recommended"] };
+//#endregion
+export { src_default as default };

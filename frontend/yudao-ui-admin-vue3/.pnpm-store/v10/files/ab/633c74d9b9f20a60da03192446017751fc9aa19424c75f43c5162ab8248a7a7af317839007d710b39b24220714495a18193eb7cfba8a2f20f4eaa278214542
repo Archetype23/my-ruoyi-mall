@@ -1,0 +1,12 @@
+/**
+ * @description to html
+ * @author wangfupeng
+ */
+import { IDomEditor } from '@wangeditor-next/core';
+import { Element } from 'slate';
+declare function videoToHtml(elemNode: Element, _childrenHtml?: string, editor?: IDomEditor): string;
+export declare const videoToHtmlConf: {
+    type: string;
+    elemToHtml: typeof videoToHtml;
+};
+export {};
