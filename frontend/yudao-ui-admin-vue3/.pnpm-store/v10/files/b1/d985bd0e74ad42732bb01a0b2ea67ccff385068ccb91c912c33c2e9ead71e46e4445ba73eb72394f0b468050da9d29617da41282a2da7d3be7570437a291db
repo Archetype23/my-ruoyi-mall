@@ -1,5 +1,0 @@
-import * as _$_unocss_eslint_plugin0 from "@unocss/eslint-plugin";
-
-//#region src/flat.d.ts
-declare const _default: _$_unocss_eslint_plugin0.UnoCSSEslintFlatConfig;
-export = _default;

@@ -1,6 +1,0 @@
-import type { PluginFunc } from 'dayjs';
-export * from './types';
-export declare const PluginLunar: PluginFunc<{
-    traditional?: boolean;
-}>;
-export default PluginLunar;
