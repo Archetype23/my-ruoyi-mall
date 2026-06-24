@@ -1,4 +1,4 @@
-# 🛍️ 西北师大社区团购系统
+# 🛍️ 课程设计作业：社区团购系统
 
 > 基于 ruoyi-vue-pro、yudao-ui-admin-vue3、yudao-mall-uniapp 改造的校园社区团购平台
 
