@@ -32,3 +32,12 @@ dist/
 .copilot/
 *.tmp
 *.bak
+
+# 前端 build 缓存
+.pnpm-store
+node_modules/
+uni_modules/
+yudao-mall-uniapp/node_modules/
+yudao-mall-uniapp/dist/
+yudao-ui-admin-vue3/node_modules/
+yudao-ui-admin-vue3/dist/
